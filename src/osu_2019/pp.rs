@@ -303,7 +303,7 @@ impl<'m> OsuPP<'m> {
         // Longer maps are worth more
         let len_bonus = 0.88
             + 0.4 * (total_hits / 2000.0).min(1.0)
-            + (total_hits > 2000.0) as u8 as f32 * 0.5 * (total_hits / 2000.0).log10();
+            + (total_hits > 2000.0) as u8 as f32 * 0.3 * (total_hits / 2000.0).log10();
         aim_value *= len_bonus;
 
         // Penalize misses
@@ -316,15 +316,11 @@ impl<'m> OsuPP<'m> {
         }
 
         // AR bonus
-        let mut ar_factor = if attributes.ar > 10.33 {
-            0.05 * (attributes.ar - 10.33)
+        let mut ar_factor = if attributes.ar < 8.0 {
+            0.025 * (8.0 - attributes.ar)
         } else {
             0.0
         };
-
-        if attributes.ar < 8.0 {
-            ar_factor = 0.025 * (8.0 - attributes.ar);
-        }
 
         aim_value *= 1.0 + ar_factor as f32 * len_bonus;
 
@@ -359,7 +355,7 @@ impl<'m> OsuPP<'m> {
         // Longer maps are worth more
         let len_bonus = 0.88
             + 0.4 * (total_hits / 2000.0).min(1.0)
-            + (total_hits > 2000.0) as u8 as f32 * 0.5 * (total_hits / 2000.0).log10();
+            + (total_hits > 2000.0) as u8 as f32 * 0.1 * (total_hits / 2000.0).log10();
         speed_value *= len_bonus;
 
         // Penalize misses
@@ -369,21 +365,6 @@ impl<'m> OsuPP<'m> {
                 attributes.speed_difficult_strain_count as f32,
             );
             speed_value *= miss_penalty;
-        }
-
-        // AR bonus
-        if attributes.ar > 10.33 {
-            let mut ar_factor = if attributes.ar > 10.33 {
-                0.05 * (attributes.ar - 10.33)
-            } else {
-                0.0
-            };
-
-            if attributes.ar < 8.0 {
-                ar_factor = 0.025 * (8.0 - attributes.ar);
-            }
-
-            speed_value *= 1.0 + ar_factor as f32 * len_bonus;
         }
 
         // HD bonus
